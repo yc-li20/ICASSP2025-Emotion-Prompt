@@ -45,7 +45,6 @@ packing = False
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# Helper function to configure bitsandbytes
 def configure_bnb():
     return BitsAndBytesConfig(
         load_in_4bit=use_4bit,
@@ -54,14 +53,10 @@ def configure_bnb():
         bnb_4bit_use_double_quant=use_nested_quant,
     )
 
-# Load dataset
 dataset = load_dataset(dataset_name, split="train") # prepare your own dataset
 
-
-# Load base model and tokenizer
 bnb_config = configure_bnb()
 
-# Load the model and move it to the appropriate device
 model = AutoModelForCausalLM.from_pretrained(
     model_name, 
     quantization_config=bnb_config, 
@@ -78,7 +73,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.padding_side = "right"  # Fix overflow issue with fp16
 
-# Configure LoRA (Low-Rank Adaptation)
+# Configure LoRA
 peft_config = LoraConfig(
     lora_alpha=lora_alpha,
     lora_dropout=lora_dropout,
