@@ -29,18 +29,18 @@ use_nested_quant = False
 # Training configuration
 output_dir = " "  # Replace with your desired output directory
 num_epochs = 5
-fp16 = True  # Enable mixed precision to utilize GPU more efficiently
-bf16 = False  # Set to True if using bfloat16 precision and supported by GPU
-batch_size = 8  # Adjust this according to your available GPU memory
+fp16 = True
+bf16 = False
+batch_size = 8
 grad_accum_steps = 1
 gradient_checkpointing = True
 max_grad_norm = 0.1
 learning_rate = 1e-4
 weight_decay = 1e-5
-optimizer = "paged_adamw_32bit"  # Ensure this optimizer is supported by your setup
+optimizer = "paged_adamw_32bit"
 lr_scheduler = "cosine"
 group_by_length = True
-max_seq_length = None  # Adjust if needed for your task
+max_seq_length = 128  # Adjust if needed for your task
 packing = False
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -60,7 +60,7 @@ bnb_config = configure_bnb()
 model = AutoModelForCausalLM.from_pretrained(
     model_name, 
     quantization_config=bnb_config, 
-    device_map="auto"  # Automatically map to available GPUs
+    device_map="auto"
 )
 model.to(device)
 
@@ -103,7 +103,7 @@ trainer = SFTTrainer(
     model=model,
     train_dataset=dataset,
     peft_config=peft_config,
-    dataset_text_field="text",  # Make sure the dataset contains a 'text' field
+    dataset_text_field="text",
     max_seq_length=max_seq_length,
     tokenizer=tokenizer,
     args=training_args,
